@@ -32,4 +32,8 @@ io.on("connection", (socket) => {
   socket.on("peer:nego:done", ({ to, ans }) => {
     io.to(to).emit("peer:nego:final", { from: socket.id, ans });
   });
+
+  socket.on("user:left", ({ to }) => {
+    io.to(to).emit("user:left");
+  })
 });

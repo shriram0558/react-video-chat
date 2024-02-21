@@ -1,11 +1,13 @@
+import ReactPlayer from "react-player";
 import { useEffect, useCallback, useState } from "react";
 import peer from "../services/peer";
 import { useSocket } from "../context/SocketProvider";
 import { useParams } from "react-router-dom";
-import Streams from "../components/Streams";
+import { useNavigate } from "react-router-dom";
 
 const RoomPage = () => {
   const socket = useSocket();
+  const navigate = useNavigate();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
@@ -71,6 +73,16 @@ const RoomPage = () => {
     await peer.setLocalDescription(ans);
   }, []);
 
+  const handleEndCall = useCallback(() => {
+    setMyStream(null);
+    setRemoteStream(null);
+    setRemoteSocketId(null);
+    peer.peer.close();
+    socket.disconnect();
+    socket.emit("user:left", { to: remoteSocketId });
+    navigate("/");
+  }, [remoteSocketId, socket, navigate]);
+
   useEffect(() => {
     peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
     return () => {
@@ -90,6 +102,7 @@ const RoomPage = () => {
     socket.on("call:accepted", handleCallAccpeted);
     socket.on("peer:nego:needed", handleNegoIncoming);
     socket.on("peer:nego:final", handleNegoFinal);
+    socket.on("user:left", handleEndCall);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -97,6 +110,7 @@ const RoomPage = () => {
       socket.off("call:accepted", handleCallAccpeted);
       socket.off("peer:nego:needed", handleNegoIncoming);
       socket.off("peer:nego:final", handleNegoFinal);
+      socket.off("user:left", handleEndCall);
     };
   }, [
     socket,
@@ -105,34 +119,138 @@ const RoomPage = () => {
     handleCallAccpeted,
     handleNegoIncoming,
     handleNegoFinal,
+    handleEndCall
   ]);
 
   return (
-    <div className="flex flex-col justify-center items-center w-screen h-auto min-h-screen max-h-screen gap-7 pt-5">
-      <h1 className="text-7xl text-yellow-400">Room {roomId}</h1>
-      <h4 className="text-2xl text-white">
-        {remoteSocketId ? "Connected" : "No one in room"}
-      </h4>
-      <div className="flex gap-5 justify-center items-center">
-        {myStream && (
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            onClick={sendStreams}
-          >
-            Send Stream
-          </button>
-        )}
-        {remoteSocketId && (
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            onClick={handleCallUser}
-          >
-            Call
-          </button>
-        )}
-      </div>
-      <Streams myStream={myStream} remoteStream={remoteStream} />
-    </div>
+    <>
+      {myStream && remoteStream ? (
+        <main className="h-screen flex flex-col">
+          <div className="h-[87%] flex items-center justify-center relative">
+            <div className="h-[92%] w-auto relative">
+              <ReactPlayer
+                height="100%"
+                width="100%"
+                playing={true}
+                style={{
+                  borderRadius: "1rem",
+                  overflow: "hidden"
+                }}
+                url={myStream}
+              />
+              <div className="h-[20%] w-auto absolute right-3 bottom-3">
+                <ReactPlayer
+                  height="100%"
+                  width="100%"
+                  style={{
+                    borderRadius: "1rem",
+                    overflow: "hidden"
+                  }}
+                  playing={true}
+                  url={remoteStream}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="h-[13%] flex justify-around items-center">
+            <div className="flex gap-11 bg-[#f4f4f4] h-auto px-4 py-2 rounded-lg">
+              <div className="flex gap-2 items-center">
+                <div className="w-[30px] h-auto">
+                  <img src="/connected.svg" alt="" />
+                </div>
+                <p>Connected</p>
+              </div>
+              <div className="flex gap-1">
+                <p>Room</p>
+                <p className="text-[#7B00DB]">{roomId}</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={sendStreams}
+                className="flex items-center gap-2 text-md text-[#388E3C] rounded-3xl px-4 py-1 border-[1.2px] border-solid border-[#388E3C]"
+              >
+                <img src="/send-stream.svg" alt="" />
+                <p>Send Stream</p>
+              </button>
+              <button
+                onClick={handleEndCall}
+                className="flex gap-2 items-center px-3 py-1 border-[1.2px] border-solid border-[#ff1515] rounded-3xl"
+              >
+                <img src="/end-call.svg" alt="" />
+                <p>End</p>
+              </button>
+            </div>
+          </div>
+        </main>
+      ) : (
+        <main className="h-screen flex flex-col">
+          <div className="h-[82%] relative flex justify-center">
+            <img
+              className="w-[25%] h-auto absolute right-8 bottom-0"
+              src="/room-img.webp"
+              alt=""
+            />
+
+            <div className="mt-16 w-[80%] flex justify-start items-center flex-col gap-5">
+              <div className="flex gap-2 justify-start mr-auto">
+                <img src="/logo.svg" alt="" />
+                <h3 className="text-4xl">VidChat</h3>
+              </div>
+              <div className="flex gap-2 items-end">
+                <p className="text-3xl">Room</p>
+                <p className="text-4xl text-[#7B00DB]">{roomId}</p>
+              </div>
+              <div className="flex gap-2 items-end">
+                {remoteSocketId && <img src="/connected.svg" alt="" />}
+                <p className="text-xl">
+                  {remoteSocketId ? "Connected" : "No one in Room"}
+                </p>
+              </div>
+              <div className="flex gap-10">
+                {myStream && (
+                  <button
+                    onClick={sendStreams}
+                    className="flex items-center gap-2 text-md text-[#388E3C] rounded-3xl px-4 py-1 border-[1.2px] border-solid border-[#388E3C]"
+                  >
+                    <img src="/send-stream.svg" alt="" />
+                    <p>Send Stream</p>
+                  </button>
+                )}
+                {remoteSocketId && (
+                  <button
+                    onClick={handleCallUser}
+                    className="flex items-center gap-2 text-md text-[#388E3C] rounded-3xl px-4 py-1 border-[1.2px] border-solid border-[#388E3C]"
+                  >
+                    <img src="/call.svg" alt="" />
+                    <p>Call</p>
+                  </button>
+                )}
+              </div>
+              {myStream && (
+                <div className="flex flex-col items-center gap-2">
+                  <p>My Stream</p>
+                  <div className="w-[30%] h-auto">
+                    <ReactPlayer
+                      height="100%"
+                      width="100%"
+                      playing={true}
+                      style={{
+                        borderRadius: "1rem",
+                        overflow: "hidden"
+                      }}
+                      url={myStream}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="h-[18%] bg-[#7B00DB]"></div>
+        </main>
+      )}
+    </>
   );
 };
 

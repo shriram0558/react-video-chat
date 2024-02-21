@@ -3,7 +3,16 @@
 @tailwind utilities;
 
 body {
+  font-family: 'Alata', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.landing-page-img-div {
+  background-image: url("/landing-img.webp");
   background-repeat: no-repeat;
-  background-size: cover;
-  background-image: url("https://images.unsplash.com/photo-1586672806791-3a67d24186c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y292ZXIlMjBhcnR8ZW58MHx8MHx8fDA%3D&w=1000&q=80");
+  background-size: auto 100%;
+  background-position: right;
 }
