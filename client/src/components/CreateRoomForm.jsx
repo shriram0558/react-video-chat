@@ -1,36 +1,36 @@
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSocket } from "../context/SocketProvider";
+import { useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useSocket } from '../context/SocketProvider'
 
 const CreateRoomForm = () => {
-  const [ email, setEmail ] = useState("");
-  const [ room, setRoom ] = useState("");
+  const [email, setEmail] = useState('')
+  const [room, setRoom] = useState('')
 
-  const socket = useSocket();
-  const navigate = useNavigate();
+  const socket = useSocket()
+  const navigate = useNavigate()
 
   const handleSubmitForm = useCallback(
     (e) => {
-      e.preventDefault();
-      socket.emit("room:join", { email, room });
+      e.preventDefault()
+      socket.emit('room:join', { email, room })
     },
-    [ email, room, socket ]
-  );
+    [email, room, socket],
+  )
 
   const handleJoinRoom = useCallback(
     (data) => {
-      const { email, room } = data;
-      navigate(`/room/${room}`, { state: { email, room } });
+      const { email, room } = data
+      navigate(`/room/${room}`, { state: { email, room } })
     },
-    [navigate]
-  );
+    [navigate],
+  )
 
   useEffect(() => {
-    socket.on("room:join", handleJoinRoom);
+    socket.on('room:join', handleJoinRoom)
     return () => {
-      socket.off("room:join", handleJoinRoom);
-    };
-  }, [handleJoinRoom, socket]);
+      socket.off('room:join', handleJoinRoom)
+    }
+  }, [handleJoinRoom, socket])
 
   return (
     <form
@@ -42,12 +42,12 @@ const CreateRoomForm = () => {
           Email:
         </label>
         <input
+          id="email"
+          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-2xl px-4 py-1 outline-none placeholder:text-[#B7B7B7]"
-          type="email"
-          id="email"
           placeholder="abc@xyz.com"
+          className="rounded-2xl px-4 py-1 outline-none placeholder:text-[#B7B7B7]"
         />
       </div>
       <div className="flex flex-col gap-1">
@@ -55,12 +55,12 @@ const CreateRoomForm = () => {
           Room number:
         </label>
         <input
+          id="room"
+          type="text"
           value={room}
           onChange={(e) => setRoom(e.target.value)}
-          className="rounded-2xl px-4 py-1 outline-none placeholder:text-[#B7B7B7]"
-          type="text"
-          id="room"
           placeholder="123"
+          className="rounded-2xl px-4 py-1 outline-none placeholder:text-[#B7B7B7]"
         />
       </div>
       <div className="flex justify-center">
@@ -69,7 +69,7 @@ const CreateRoomForm = () => {
         </button>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default CreateRoomForm;
+export default CreateRoomForm

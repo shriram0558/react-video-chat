@@ -12,7 +12,4 @@ body {
 
 .landing-page-img-div {
   background-image: url("/landing-img.webp");
-  background-repeat: no-repeat;
-  background-size: auto 100%;
-  background-position: right;
 }
