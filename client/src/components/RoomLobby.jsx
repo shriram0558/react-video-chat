@@ -24,7 +24,7 @@ const RoomLobby = ({
           </div>
           <div className="flex gap-2 items-end">
             <p className="text-3xl">Room</p>
-            <p className="text-4xl text-[#7B00DB]">{roomId}</p>
+            <p className="text-4xl text-secondary">{roomId}</p>
           </div>
           <div className="flex gap-2 items-end">
             {remoteSocketId && <img src="/connected.svg" alt="Connected" />}
@@ -71,7 +71,7 @@ const RoomLobby = ({
           )}
         </div>
       </div>
-      <div className="h-[18%] bg-[#7B00DB]"></div>
+      <div className="h-[18%] bg-secondary"></div>
     </main>
   )
 }

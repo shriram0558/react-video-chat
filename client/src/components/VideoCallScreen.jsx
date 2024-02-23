@@ -46,7 +46,7 @@ const VideoCallScreen = ({
           </div>
           <div className="flex gap-1">
             <p>Room</p>
-            <p className="text-[#7B00DB]">{roomId}</p>
+            <p className="text-secondary">{roomId}</p>
           </div>
         </div>
 

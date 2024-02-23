@@ -34,10 +34,10 @@ In the server folder
 
 ## Technology Stack
 
+* Node.js
+* Socket.io
 * React
 * WebRTC
-* TCP protocol
-* Node.js
 * Tailwind
 
 ## License

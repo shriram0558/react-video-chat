@@ -12,7 +12,7 @@ const LoginPage = () => {
           <img src="/login-img.webp" alt="Login" />
         </div>
       </div>
-      <div className="w-[55%] bg-[#7B00DB] flex justify-center items-center">
+      <div className="w-[55%] bg-secondary flex justify-center items-center">
         <CreateRoomForm />
       </div>
     </main>

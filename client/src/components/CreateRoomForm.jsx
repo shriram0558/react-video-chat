@@ -14,16 +14,14 @@ const CreateRoomForm = () => {
       e.preventDefault()
       socket.emit('room:join', { email, room })
     },
-    [email, room, socket],
-  )
+    [email, room, socket])
 
   const handleJoinRoom = useCallback(
     (data) => {
       const { email, room } = data
       navigate(`/room/${room}`, { state: { email, room } })
     },
-    [navigate],
-  )
+    [navigate])
 
   useEffect(() => {
     socket.on('room:join', handleJoinRoom)
@@ -64,7 +62,7 @@ const CreateRoomForm = () => {
         />
       </div>
       <div className="flex justify-center">
-        <button className="w-auto bg-[#7B00DB] px-5 py-2 rounded-full text-white text-lg">
+        <button className="w-auto bg-secondary px-5 py-2 rounded-full text-white text-lg">
           Join
         </button>
       </div>
